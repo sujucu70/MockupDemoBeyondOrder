@@ -1,9 +1,33 @@
+Entendido. He analizado el nuevo flujo para **Beyond Booking** y la información de la web, y tengo un plan claro para adaptar el proyecto `MockupDemoBeyondBooking`. La imagen del flujo es la guía perfecta para esta tarea.
+
+Como desarrollador experto en este tipo de demos, mi enfoque será asegurar que la nueva versión no solo siga el guion, sino que también **refleje el valor de negocio** del servicio de agendamiento (reducción de "no-shows", optimización de agendas, etc.) y mantenga la coherencia técnica y visual que ya teníamos.
+
+Te proporcionaré directamente el fichero `index.html` completo con todas las modificaciones implementadas.
+
+-----
+
+### Resumen de Cambios Realizados
+
+A continuación, un resumen de las adaptaciones clave que he realizado en el código:
+
+1.  **Guion de la Conversación:** He reescrito por completo la constante `demoSteps` en JavaScript para implementar el flujo de agendamiento de la paciente "Lucía" en la "Clínica Dental Sonrisa Sena", siguiendo paso a paso la interacción que me has facilitado.
+2.  **KPIs y Métricas de Negocio:** He sustituido los KPIs superiores por métricas relevantes para un servicio de gestión de citas: **Tasa de No-Show**, **Ocupación de Agenda**, **Coste por Cita** y **Satisfacción (CSAT)**. Estos se actualizarán dinámicamente durante la demo para mostrar el impacto del servicio.
+3.  **Paneles y Textos:** He actualizado todos los textos de la interfaz, desde el título principal hasta el "Outcome" final, para que se alineen con la narrativa y los beneficios de **Beyond Booking**.
+4.  **Lógica Interna (Logs y Tareas):** He modificado los logs del panel técnico y las tareas dinámicas de los agentes para que representen de forma realista un proceso de consulta de disponibilidad en calendarios, confirmación y envío de recordatorios.
+
+-----
+
+### **Archivo `index.html` Actualizado para Beyond Booking**
+
+Simplemente reemplaza todo el contenido de tu archivo `index.html` en el proyecto `MockupDemoBeyondBooking` con este código.
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo: Arquitectura de IA para Contact Center</title>
+    <title>Demo: Beyond Booking - Gestión de Citas con IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,15 +65,15 @@
 
     <div class="w-full max-w-screen-2xl mx-auto bg-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl border border-gray-700">
         <div class="text-center mb-4">
-            <h1 class="text-3xl md:text-4xl font-bold text-white">Demo BeyondFCR</h1>
-            <p class="text-lg text-gray-400 mt-2">Experiencia de Cliente · Proceso Multiagéntico · Flujo Técnico</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-white">Demo Beyond Booking</h1>
+            <p class="text-lg text-gray-400 mt-2">Gestión de Citas · Proceso Híbrido · Experiencia Fluida</p>
         </div>
 
         <div id="kpi-panel" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 bg-gray-900/50 p-4 rounded-xl border border-gray-700">
-            <div class="text-center"><p class="text-sm text-gray-400">Tiempo de Espera</p><p id="kpi-wait-time" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
-            <div class="text-center"><p class="text-sm text-gray-400">Resolución 1er Contacto</p><p id="kpi-fcr" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
-            <div class="text-center"><p class="text-sm text-gray-400">Coste Interacción</p><p id="kpi-cost" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
-            <div class="text-center"><p class="text-sm text-gray-400">CSAT Proyectado</p><p id="kpi-csat" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Tasa de No-Show</p><p id="kpi-no-show" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Ocupación de Agenda</p><p id="kpi-occupancy" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Coste por Cita</p><p id="kpi-cost" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Satisfacción Cliente</p><p id="kpi-csat" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -60,7 +84,7 @@
                         <div id="phone-icon" class="w-20 h-20 bg-blue-500 rounded-full mx-auto flex items-center justify-center phone-icon-container">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.518.759a11.03 11.03 0 004.28 4.28l.759-1.518a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
                         </div>
-                        <p id="callerName" class="text-2xl font-semibold mt-4">Soporte Telco</p>
+                        <p id="callerName" class="text-2xl font-semibold mt-4">Clínica Sonrisa Sena</p>
                         <p id="callStatus" class="text-gray-400 mt-1">llamada entrante...</p>
                         <p id="callTimer" class="text-gray-400 mt-4 text-lg">00:00</p>
                     </div>
@@ -113,16 +137,7 @@
         <div id="summary-container" class="mt-6 opacity-0 pointer-events-none transition-opacity duration-500">
             <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
                 <h3 class="text-xl font-bold text-green-400 mb-4 text-center">Resultados de la Interacción</h3>
-                <div class="mb-4 px-2 text-center">
-                    <p class="text-sm font-semibold text-gray-300">Outcome General</p>
-                    <p id="summary-outcome" class="text-sm text-white mt-1"></p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                    <p class="flex justify-between md:block md:text-center px-2"><span>✅ Tiempo de espera:</span> <strong id="summary-wait-time" class="md:block md:text-xl md:mt-1"></strong></p>
-                    <p class="flex justify-between md:block md:text-center px-2"><span>✅ Resolución en primer contacto:</span> <strong id="summary-fcr" class="md:block md:text-xl md:mt-1"></strong></p>
-                    <p class="flex justify-between md:block md:text-center px-2"><span>⚠️ Coste de la interacción:</span> <strong id="summary-cost" class="md:block md:text-xl md:mt-1"></strong></p>
-                    <p class="flex justify-between md:block md:text-center px-2"><span>📈 Satisfacción del cliente:</span> <strong id="summary-csat" class="md:block md:text-xl md:mt-1"></strong></p>
-                </div>
+                <p id="summary-outcome" class="text-center text-lg text-gray-200 mt-2 px-4"></p>
             </div>
         </div>
 
@@ -139,70 +154,71 @@
 <script>
     const demoSteps = [
         {
-            speaker: "Bot", text: "Hola Carlos, bienvenido al soporte. Veo que tu última factura se emitió hace un par de días. ¿Es posible que llames por alguna consulta sobre ella?",
-            features: [1, 2, 3, 4],
-            agentTasks: { 1: "Recibe la llamada entrante y la transcribe a texto.", 2: "Identifica al cliente 'Carlos' a través de su número de teléfono.", 3: "Decide proactivamente consultar la última factura como primer paso.", 4: "Consulta la API de facturación para obtener los datos de la última factura." },
-            logs: ["[PBX] -> [VOCAL_AGENT] - INCOMING_CALL", "[IDENTITY_AGENT] -> [API_CRM] - POST /lookup", "[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /last_invoice", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
-            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "92%" },
-            callerName: "Carlos", callStatus: "Llamada en curso"
+            speaker: "Bot", text: "Gracias por llamar a la Clínica Dental Sonrisa Sena. Hemos identificado tu número, hablo con Lucía, ¿verdad?",
+            features: [1, 2],
+            agentTasks: { 1: "Recibe la llamada y la transcribe a texto.", 2: "Identifica a la paciente 'Lucía' a través de su número (Caller ID)." },
+            logs: ["[PBX] -> [VOCAL_AGENT] - INCOMING_CALL", "[IDENTITY_AGENT] -> [CRM_API] - POST /lookup_patient"],
+            kpis: { "no-show": "15%", occupancy: "85%", cost: "Alto", csat: "80%" },
+            callerName: "Lucía", callStatus: "Llamada en curso"
         },
         {
-            speaker: "Carlos", text: "Sí, exacto. Es que me ha llegado una factura de 85 euros y no entiendo por qué ha subido tanto este mes.",
+            speaker: "Lucía", text: "Sí, soy yo, quiero pedir cita para la limpieza dental que me hago todos los años.",
             features: [1, 3],
-            agentTasks: { 1: "Interpreta la intención del cliente: 'consultar detalle de factura'.", 3: "Recibe la intención y prepara la siguiente acción: consultar detalles." },
-            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'query_invoice'"],
-            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "92%" }
+            agentTasks: { 1: "Interpreta la intención: 'solicitar cita' y la entidad: 'limpieza dental'.", 3: "Recibe la intención y decide el siguiente paso: preguntar preferencias." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'request_appointment'"],
+            kpis: { "no-show": "15%", occupancy: "85%", cost: "Alto", csat: "82%" }
         },
         {
-            speaker: "Bot", text: "Entiendo tu preocupación, déjame que lo revise... Vale, ya lo tengo. Veo que el incremento se debe a la suscripción al paquete 'Cine Total'. ¿Puede ser?",
-            features: [3, 4],
-            agentTasks: { 3: "Solicita al Agente de Integración los detalles del cargo.", 4: "Ejecuta la consulta en la API de facturación y devuelve el concepto 'Cine Total'." },
-            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /invoice_details", "[INTEGRATION_AGENT] -> [ORCHESTRATOR_AGENT] - RESPONSE {charge}", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
-            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "93%" }
-        },
-        {
-            speaker: "Carlos", text: "Es verdad, lo activé para una prueba. Pues no me interesa mantenerlo.",
-            features: [1, 3],
-            agentTasks: { 1: "Interpreta la nueva intención del cliente: 'cancelar suscripción'.", 3: "Recibe la intención y prepara la siguiente acción: ofrecer la cancelación." },
-            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'cancel_subscription'"],
-            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "93%" }
-        },
-        {
-            speaker: "Bot", text: "No hay problema. Si lo deseas, puedo cancelar la suscripción ahora mismo para que no se genere ningún cargo en tu próxima factura. ¿Quieres que lo haga?",
-            features: [3, 4],
-            agentTasks: { 3: "Decide ofrecer la cancelación como una acción de autoservicio.", 4: "Prepara la transacción de 'cancelar suscripción' en espera de confirmación." },
+            speaker: "Bot", text: "Entendido, una limpieza dental. ¿Tienes alguna preferencia de día u hora? Por ejemplo, la semana que viene por la mañana.",
+            features: [3],
+            agentTasks: { 3: "Gestiona el diálogo para acotar la búsqueda de disponibilidad." },
             logs: ["[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
-            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "94%" }
+            kpis: { "no-show": "15%", occupancy: "85%", cost: "Alto", csat: "85%" }
         },
         {
-            speaker: "Carlos", text: "Antes de cancelarlo, preferiría hablar con una persona para ver si hay alguna oferta o promoción.",
+            speaker: "Lucía", text: "Pues, mira, me vendría mejor la semana que viene por la tarde, si es posible.",
             features: [1, 3],
-            agentTasks: { 1: "Interpreta la intención final: 'solicitar agente humano'.", 3: "Detecta la necesidad de escalado y detiene el flujo de automatización." },
-            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'request_human_agent'"],
-            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "94%" }
+            agentTasks: { 1: "Extrae la nueva preferencia temporal: 'próxima semana, tarde'.", 3: "Prepara la consulta de disponibilidad con los parámetros recibidos." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - PREFERENCE 'next_week_afternoon'"],
+            kpis: { "no-show": "15%", occupancy: "85%", cost: "Bajo", csat: "88%" }
         },
         {
-            speaker: "Bot", text: "Por supuesto. Te paso ahora mismo con un agente. Y no te preocupes, le voy a transmitir toda nuestra conversación. Por favor, espera un momento.",
-            features: [3, 5],
-            agentTasks: { 3: "Inicia el protocolo de escalado y solicita un resumen del caso.", 5: "Sintetiza la conversación y prepara el paquete de datos para la transferencia." },
-            logs: ["[ORCHESTRATOR_AGENT] -> [HANDOFF_MANAGER] - PACKAGE_DATA", "[HANDOFF_MANAGER] -> [PBX] - INITIATE_TRANSFER"],
-            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "95%" },
-            callStatus: "Transfiriendo..."
+            speaker: "Bot", text: "De acuerdo. (pausa breve) He consultado la agenda de nuestros higienistas. Para la próxima semana por la tarde, te puedo ofrecer dos opciones: el Martes a las cinco y media, o el Jueves a las seis. ¿Te va bien alguna?",
+            features: [3, 4],
+            agentTasks: { 3: "Solicita al Agente de Integración los huecos disponibles.", 4: "Consulta la API del calendario en tiempo real y devuelve los huecos libres." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /availability", "[INTEGRATION_AGENT] -> [ORCHESTRATOR_AGENT] - RESPONSE {slots}"],
+            kpis: { "no-show": "15%", occupancy: "88%", cost: "Bajo", csat: "90%" }
         },
         {
-            speaker: "Agente", text: "¡Hola Carlos, soy Marta! Gracias por esperar. Mi compañero virtual me pasó tu caso. Veo que quieres ver si hay alguna promoción para el paquete 'Cine Total', ¿correcto?",
-            features: [5],
-            agentTasks: { 5: "Entrega el contexto completo en la pantalla del agente humano antes de que atienda la llamada." },
-            logs: ["[PBX] -> [AGENT_SOFTPHONE] - CALL_ACCEPTED", "[HANDOFF_MANAGER] -> [AGENT_SOFTPHONE] - DISPLAY_DATA"],
-            kpis: { wait: "0s", fcr: "100%", cost: "Medio", csat: "95%" },
-            callerName: "Marta (Agente)",
-            // --- CAMBIO: Se añaden de nuevo los KPIs al objeto summary ---
+            speaker: "Lucía", text: "El Jueves a las seis me viene genial.",
+            features: [1, 3],
+            agentTasks: { 1: "Interpreta la selección final del usuario.", 3: "Prepara la confirmación final de la cita." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - SLOT_CONFIRMED"],
+            kpis: { "no-show": "15%", occupancy: "90%", cost: "Bajo", csat: "91%" }
+        },
+        {
+            speaker: "Bot", text: "¡Perfecto! Pues te agendo la cita para la limpieza dental el próximo jueves, a las seis de la tarde. Para tu comodidad, recibirás ahora un SMS de confirmación con los detalles y un enlace por si necesitaras reprogramarla. Además, te enviaremos un recordatorio 24 horas antes. ¿Necesitas algo más?",
+            features: [3, 4],
+            agentTasks: { 3: "Instruye al Agente de Integración para que confirme y notifique.", 4: "Escribe la cita en el calendario (API) y dispara el envío de SMS de confirmación." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - POST /book_appointment", "[INTEGRATION_AGENT] -> [NOTIFICATION_SERVICE] - SEND_SMS"],
+            kpis: { "no-show": "<5%", occupancy: "95%", cost: "Bajo", csat: "94%" }
+        },
+        {
+            speaker: "Lucía", text: "No, eso es todo. ¡Muchas gracias!",
+            features: [1],
+            agentTasks: { 1: "Detecta la intención de finalizar la llamada." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'end_call'"],
+            kpis: { "no-show": "<5%", occupancy: "95%", cost: "Bajo", csat: "95%" }
+        },
+        {
+            speaker: "Bot", text: "A ti por llamar, Lucía. ¡Que tengas un buen día!",
+            features: [3],
+            agentTasks: { 3: "Finaliza la conversación de forma amable." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH", "[PBX] -> CALL_ENDED"],
+            kpis: { "no-show": "<5%", occupancy: "95%", cost: "Bajo", csat: "95%" },
+            callStatus: "Llamada finalizada",
             summary: { 
-                outcome: "El sistema de IA ha identificado correctamente la causa del problema en la factura (un servicio activo) y ha transferido la llamada de forma proactiva a un agente humano para discutir ofertas comerciales, asegurando una experiencia de cliente fluida y sin fricciones.",
-                wait: "0s",
-                fcr: "Sí",
-                cost: "Medio",
-                csat: "Alta (95%)"
+                outcome: "Cita para limpieza dental agendada y confirmada por SMS de forma automática, con un recordatorio programado para reducir la tasa de no-show."
             }
         }
     ];
@@ -218,7 +234,7 @@
     const summaryContainer = document.getElementById('summary-container');
     const ctaBtn = document.getElementById('cta-btn');
     
-    const kpiElements = { wait: document.getElementById('kpi-wait-time'), fcr: document.getElementById('kpi-fcr'), cost: document.getElementById('kpi-cost'), csat: document.getElementById('kpi-csat') };
+    const kpiElements = { "no-show": document.getElementById('kpi-no-show'), occupancy: document.getElementById('kpi-occupancy'), cost: document.getElementById('kpi-cost'), csat: document.getElementById('kpi-csat') };
 
     let botVoice = null;
     let humanVoice = null;
@@ -235,10 +251,10 @@
         }
         
         utterance.lang = 'es-ES';
-        if (speaker === 'Carlos') {
-            utterance.pitch = 0.8; utterance.rate = 0.95;
-        } else {
-            utterance.pitch = 1.1;
+        if (speaker === 'Lucía') { // Adaptado al nuevo speaker
+            utterance.pitch = 1.2; utterance.rate = 1.05;
+        } else { // Bot
+            utterance.pitch = 1.0; utterance.rate = 1.0;
             utterance.onstart = () => phoneIcon.classList.add('speaking');
             utterance.onend = () => phoneIcon.classList.remove('speaking');
         }
@@ -297,7 +313,7 @@
     function createBubble(speaker, text) {
         const bubble = document.createElement('div');
         bubble.className = 'p-3 rounded-lg max-w-xs md:max-w-md transcript-bubble';
-        if (speaker === 'Carlos') {
+        if (speaker === 'Lucía') { // Adaptado al nuevo speaker
             bubble.classList.add('bg-blue-600', 'rounded-br-none', 'ml-auto');
             bubble.innerHTML = `<p>${text}</p>`;
         } else {
@@ -340,19 +356,12 @@
         Object.keys(kpiData).forEach(key => {
             if (kpiElements[key]) {
                 kpiElements[key].textContent = kpiData[key];
-                kpiElements[key].classList.toggle('text-yellow-400', kpiData[key] === 'Medio');
-                kpiElements[key].classList.toggle('text-green-400', kpiData[key] !== 'Medio');
             }
         });
     }
 
-    // --- CAMBIO: Función de resumen actualizada para mostrar KPIs ---
     function showSummary(summaryData) {
         document.getElementById('summary-outcome').textContent = summaryData.outcome;
-        document.getElementById('summary-wait-time').textContent = summaryData.wait;
-        document.getElementById('summary-fcr').textContent = summaryData.fcr;
-        document.getElementById('summary-cost').textContent = summaryData.cost;
-        document.getElementById('summary-csat').textContent = summaryData.csat;
         summaryContainer.classList.remove('opacity-0', 'pointer-events-none');
     }
 
@@ -381,7 +390,7 @@
 
         updateKpis(step.kpis);
 
-        const isBotTurn = step.speaker !== 'Carlos';
+        const isBotTurn = step.speaker !== 'Lucía'; // Adaptado al nuevo speaker
         let typingIndicator, processingLog;
 
         if (isBotTurn) {
@@ -418,7 +427,7 @@
         speechSynthesis.cancel();
         transcriptContainer.innerHTML = '';
         techLogContainer.innerHTML = '<span class="text-gray-600">Esperando inicio de la demo...</span>';
-        callerNameEl.textContent = 'Soporte Telco';
+        callerNameEl.textContent = 'Clínica Sonrisa Sena';
         callStatusEl.textContent = 'llamada entrante...';
         callTimerEl.textContent = '00:00';
         controlBtn.textContent = '▶ Iniciar Demo';
@@ -435,7 +444,7 @@
             }
         }
 
-        updateKpis({ wait: '--', fcr: '--', cost: '--', csat: '--' });
+        updateKpis({ "no-show": '--', occupancy: '--', cost: '--', csat: '--' });
         stopTimer();
     }
 
@@ -450,7 +459,15 @@
             currentStep++;
             renderStep(currentStep);
         } else if (currentStep === demoSteps.length - 1) {
+            // Último paso del bot, antes de mostrar el resumen
+            renderStep(currentStep);
+            // El resumen se muestra al siguiente clic
+            controlBtn.textContent = 'Ver Resultados';
+            currentStep++;
+        } else if (currentStep === demoSteps.length) {
+            // Muestra el resumen
             showSummary(demoSteps[demoSteps.length - 1].summary);
+            stopTimer();
             controlBtn.textContent = 'Reiniciar Demo';
             controlBtn.className = 'bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg';
             ctaBtn.classList.remove('hidden');
