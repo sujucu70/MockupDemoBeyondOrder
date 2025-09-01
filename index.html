@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo: Arquitectura de IA para Contact Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .phone-screen { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .transcript-bubble { opacity: 0; transform: translateY(20px); transition: all 0.5s ease; }
+        .transcript-bubble.visible { opacity: 1; transform: translateY(0); }
+        .transcript-bubble p { font-size: 0.75rem; line-height: 1rem; }
+        .feature-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background-color: rgb(55 65 81 / 0.5); border-radius: 0.75rem; border: 1px solid transparent; opacity: 0.4; transition: all 0.5s ease; }
+        .feature-item.highlighted { opacity: 1; background-color: rgb(31 41 55 / 0.7); border-color: rgb(59 130 246 / 0.5); }
+        .tech-log-container { font-family: 'Roboto Mono', monospace; background-color: #000; border: 1px solid #374151; }
+        .log-entry { opacity: 0; transform: translateY(15px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .log-entry { font-size: 0.7rem; line-height: 1rem; }
+        .log-entry.visible { opacity: 1; transform: translateY(0); }
+        .phone-icon-container.speaking { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 50% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } }
+        .kpi-value { transition: color 0.5s ease; }
+        .typing-indicator span { height: 8px; width: 8px; background-color: #9CA3AF; border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .feature-item .text-gray-400 {
+            font-size: 0.75rem;
+            line-height: 1rem;
+            transition: color 0.3s ease;
+        }
+        .feature-item.highlighted .text-gray-400 {
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-screen-2xl mx-auto bg-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl border border-gray-700">
+        <div class="text-center mb-4">
+            <h1 class="text-3xl md:text-4xl font-bold text-white">Demo BeyondFCR</h1>
+            <p class="text-lg text-gray-400 mt-2">Experiencia de Cliente · Proceso Multiagéntico · Flujo Técnico</p>
+        </div>
+
+        <div id="kpi-panel" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 bg-gray-900/50 p-4 rounded-xl border border-gray-700">
+            <div class="text-center"><p class="text-sm text-gray-400">Tiempo de Espera</p><p id="kpi-wait-time" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Resolución 1er Contacto</p><p id="kpi-fcr" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Coste Interacción</p><p id="kpi-cost" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">CSAT Proyectado</p><p id="kpi-csat" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 flex flex-col">
+                <h2 class="text-xl font-semibold mb-4 text-center">Panel Conversacional</h2>
+                <div class="bg-black rounded-3xl p-4 border-4 border-gray-700 phone-screen max-w-sm mx-auto">
+                    <div class="text-center py-8">
+                        <div id="phone-icon" class="w-20 h-20 bg-blue-500 rounded-full mx-auto flex items-center justify-center phone-icon-container">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.518.759a11.03 11.03 0 004.28 4.28l.759-1.518a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
+                        </div>
+                        <p id="callerName" class="text-2xl font-semibold mt-4">Soporte Telco</p>
+                        <p id="callStatus" class="text-gray-400 mt-1">llamada entrante...</p>
+                        <p id="callTimer" class="text-gray-400 mt-4 text-lg">00:00</p>
+                    </div>
+                </div>
+                <div id="transcript-container" class="mt-6 space-y-4 flex-grow overflow-y-auto pr-2"></div>
+            </div>
+
+            <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 flex flex-col">
+                <h2 class="text-xl font-semibold mb-4 text-center">Proceso Multiagéntico</h2>
+                <div id="features-list" class="space-y-3 flex-grow">
+                    <div class="feature-item" data-feature-id="1">
+                        <span class="text-2xl">🗣️</span>
+                        <p><strong>Agente Vocal:</strong><br>
+                            <span id="agent-task-1" class="text-gray-400" data-default-text="Conversa e interpreta intenciones en lenguaje natural.">Conversa e interpreta intenciones en lenguaje natural.</span>
+                        </p>
+                    </div>
+                    <div class="feature-item" data-feature-id="2">
+                        <span class="text-2xl">👤</span>
+                        <p><strong>Agente de Identidad y Contexto:</strong><br>
+                            <span id="agent-task-2" class="text-gray-400" data-default-text="Verifica la identidad del usuario y carga perfil desde sistemas internos.">Verifica la identidad del usuario y carga perfil desde sistemas internos.</span>
+                        </p>
+                    </div>
+                    <div class="feature-item" data-feature-id="3">
+                        <span class="text-2xl">🧑‍⚖️</span>
+                        <p><strong>Agente Orquestador:</strong><br>
+                           <span id="agent-task-3" class="text-gray-400" data-default-text="Cerebro central que toma decisiones y dirige al resto de agentes.">Cerebro central que toma decisiones y dirige al resto de agentes.</span>
+                        </p>
+                    </div>
+                    <div class="feature-item" data-feature-id="4">
+                        <span class="text-2xl">⚙️</span>
+                        <p><strong>Agente de Integración:</strong><br>
+                           <span id="agent-task-4" class="text-gray-400" data-default-text="Punto de contacto para todos los sistemas externos. Ejecuta consultas y transacciones.">Punto de contacto para todos los sistemas externos. Ejecuta consultas y transacciones.</span>
+                        </p>
+                    </div>
+                    <div class="feature-item" data-feature-id="5">
+                        <span class="text-2xl">↳</span>
+                        <p><strong>Gestor de Escalado Humano:</strong><br>
+                            <span id="agent-task-5" class="text-gray-400" data-default-text="Gestiona el proceso de transferencia asegurando una transición de contexto fluida.">Gestiona el proceso de transferencia asegurando una transición de contexto fluida.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 flex flex-col">
+                <h2 class="text-xl font-semibold mb-4 text-center">Panel Técnico</h2>
+                <div id="tech-log" class="tech-log-container p-4 rounded-lg overflow-y-auto flex-grow"></div>
+            </div>
+        </div>
+        
+        <div id="summary-container" class="mt-6 opacity-0 pointer-events-none transition-opacity duration-500">
+            <div class="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
+                <h3 class="text-xl font-bold text-green-400 mb-4 text-center">Resultados de la Interacción</h3>
+                <div class="mb-4 px-2 text-center">
+                    <p class="text-sm font-semibold text-gray-300">Outcome General</p>
+                    <p id="summary-outcome" class="text-sm text-white mt-1"></p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                    <p class="flex justify-between md:block md:text-center px-2"><span>✅ Tiempo de espera:</span> <strong id="summary-wait-time" class="md:block md:text-xl md:mt-1"></strong></p>
+                    <p class="flex justify-between md:block md:text-center px-2"><span>✅ Resolución en primer contacto:</span> <strong id="summary-fcr" class="md:block md:text-xl md:mt-1"></strong></p>
+                    <p class="flex justify-between md:block md:text-center px-2"><span>⚠️ Coste de la interacción:</span> <strong id="summary-cost" class="md:block md:text-xl md:mt-1"></strong></p>
+                    <p class="flex justify-between md:block md:text-center px-2"><span>📈 Satisfacción del cliente:</span> <strong id="summary-csat" class="md:block md:text-xl md:mt-1"></strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center flex justify-center items-center space-x-4">
+            <button id="demo-control-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg">
+                ▶ Iniciar Demo
+            </button>
+            <a href="#" id="cta-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg hidden">
+                Pruébalo tú mismo
+            </a>
+        </div>
+    </div>
+
+<script>
+    const demoSteps = [
+        {
+            speaker: "Bot", text: "Hola Carlos, bienvenido al soporte. Veo que tu última factura se emitió hace un par de días. ¿Es posible que llames por alguna consulta sobre ella?",
+            features: [1, 2, 3, 4],
+            agentTasks: { 1: "Recibe la llamada entrante y la transcribe a texto.", 2: "Identifica al cliente 'Carlos' a través de su número de teléfono.", 3: "Decide proactivamente consultar la última factura como primer paso.", 4: "Consulta la API de facturación para obtener los datos de la última factura." },
+            logs: ["[PBX] -> [VOCAL_AGENT] - INCOMING_CALL", "[IDENTITY_AGENT] -> [API_CRM] - POST /lookup", "[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /last_invoice", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "92%" },
+            callerName: "Carlos", callStatus: "Llamada en curso"
+        },
+        {
+            speaker: "Carlos", text: "Sí, exacto. Es que me ha llegado una factura de 85 euros y no entiendo por qué ha subido tanto este mes.",
+            features: [1, 3],
+            agentTasks: { 1: "Interpreta la intención del cliente: 'consultar detalle de factura'.", 3: "Recibe la intención y prepara la siguiente acción: consultar detalles." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'query_invoice'"],
+            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "92%" }
+        },
+        {
+            speaker: "Bot", text: "Entiendo tu preocupación, déjame que lo revise... Vale, ya lo tengo. Veo que el incremento se debe a la suscripción al paquete 'Cine Total'. ¿Puede ser?",
+            features: [3, 4],
+            agentTasks: { 3: "Solicita al Agente de Integración los detalles del cargo.", 4: "Ejecuta la consulta en la API de facturación y devuelve el concepto 'Cine Total'." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /invoice_details", "[INTEGRATION_AGENT] -> [ORCHESTRATOR_AGENT] - RESPONSE {charge}", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "93%" }
+        },
+        {
+            speaker: "Carlos", text: "Es verdad, lo activé para una prueba. Pues no me interesa mantenerlo.",
+            features: [1, 3],
+            agentTasks: { 1: "Interpreta la nueva intención del cliente: 'cancelar suscripción'.", 3: "Recibe la intención y prepara la siguiente acción: ofrecer la cancelación." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'cancel_subscription'"],
+            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "93%" }
+        },
+        {
+            speaker: "Bot", text: "No hay problema. Si lo deseas, puedo cancelar la suscripción ahora mismo para que no se genere ningún cargo en tu próxima factura. ¿Quieres que lo haga?",
+            features: [3, 4],
+            agentTasks: { 3: "Decide ofrecer la cancelación como una acción de autoservicio.", 4: "Prepara la transacción de 'cancelar suscripción' en espera de confirmación." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "94%" }
+        },
+        {
+            speaker: "Carlos", text: "Antes de cancelarlo, preferiría hablar con una persona para ver si hay alguna oferta o promoción.",
+            features: [1, 3],
+            agentTasks: { 1: "Interpreta la intención final: 'solicitar agente humano'.", 3: "Detecta la necesidad de escalado y detiene el flujo de automatización." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'request_human_agent'"],
+            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "94%" }
+        },
+        {
+            speaker: "Bot", text: "Por supuesto. Te paso ahora mismo con un agente. Y no te preocupes, le voy a transmitir toda nuestra conversación. Por favor, espera un momento.",
+            features: [3, 5],
+            agentTasks: { 3: "Inicia el protocolo de escalado y solicita un resumen del caso.", 5: "Sintetiza la conversación y prepara el paquete de datos para la transferencia." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [HANDOFF_MANAGER] - PACKAGE_DATA", "[HANDOFF_MANAGER] -> [PBX] - INITIATE_TRANSFER"],
+            kpis: { wait: "0s", fcr: "100%", cost: "Bajo", csat: "95%" },
+            callStatus: "Transfiriendo..."
+        },
+        {
+            speaker: "Agente", text: "¡Hola Carlos, soy Marta! Gracias por esperar. Mi compañero virtual me pasó tu caso. Veo que quieres ver si hay alguna promoción para el paquete 'Cine Total', ¿correcto?",
+            features: [5],
+            agentTasks: { 5: "Entrega el contexto completo en la pantalla del agente humano antes de que atienda la llamada." },
+            logs: ["[PBX] -> [AGENT_SOFTPHONE] - CALL_ACCEPTED", "[HANDOFF_MANAGER] -> [AGENT_SOFTPHONE] - DISPLAY_DATA"],
+            kpis: { wait: "0s", fcr: "100%", cost: "Medio", csat: "95%" },
+            callerName: "Marta (Agente)",
+            // --- CAMBIO: Se añaden de nuevo los KPIs al objeto summary ---
+            summary: { 
+                outcome: "El sistema de IA ha identificado correctamente la causa del problema en la factura (un servicio activo) y ha transferido la llamada de forma proactiva a un agente humano para discutir ofertas comerciales, asegurando una experiencia de cliente fluida y sin fricciones.",
+                wait: "0s",
+                fcr: "Sí",
+                cost: "Medio",
+                csat: "Alta (95%)"
+            }
+        }
+    ];
+
+    const controlBtn = document.getElementById('demo-control-btn');
+    const transcriptContainer = document.getElementById('transcript-container');
+    const techLogContainer = document.getElementById('tech-log');
+    const featureItems = document.querySelectorAll('.feature-item');
+    const callerNameEl = document.getElementById('callerName');
+    const callStatusEl = document.getElementById('callStatus');
+    const callTimerEl = document.getElementById('callTimer');
+    const phoneIcon = document.getElementById('phone-icon');
+    const summaryContainer = document.getElementById('summary-container');
+    const ctaBtn = document.getElementById('cta-btn');
+    
+    const kpiElements = { wait: document.getElementById('kpi-wait-time'), fcr: document.getElementById('kpi-fcr'), cost: document.getElementById('kpi-cost'), csat: document.getElementById('kpi-csat') };
+
+    let botVoice = null;
+    let humanVoice = null;
+
+    function speak(text, speaker) {
+        if (!'speechSynthesis' in window) return;
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        if (speaker === 'Agente' && humanVoice) {
+            utterance.voice = humanVoice;
+        } else if (botVoice) {
+            utterance.voice = botVoice;
+        }
+        
+        utterance.lang = 'es-ES';
+        if (speaker === 'Carlos') {
+            utterance.pitch = 0.8; utterance.rate = 0.95;
+        } else {
+            utterance.pitch = 1.1;
+            utterance.onstart = () => phoneIcon.classList.add('speaking');
+            utterance.onend = () => phoneIcon.classList.remove('speaking');
+        }
+        speechSynthesis.speak(utterance);
+    }
+
+    function loadVoices() {
+        const allVoices = speechSynthesis.getVoices();
+        if (allVoices.length === 0) {
+            speechSynthesis.onvoiceschanged = () => loadVoices();
+            return;
+        }
+
+        let spanishVoices = allVoices.filter(voice => voice.lang === 'es-ES');
+
+        if (spanishVoices.length === 0) {
+            console.warn("No se encontraron voces 'es-ES'. Buscando en 'es'.");
+            spanishVoices = allVoices.filter(voice => voice.lang.startsWith('es'));
+        }
+
+        if (spanishVoices.length >= 2) {
+            botVoice = spanishVoices[0];
+            humanVoice = spanishVoices[1];
+        } else if (spanishVoices.length === 1) {
+            console.warn("Solo se encontró una voz en español. Se usará la misma para el bot y el agente humano.");
+            botVoice = spanishVoices[0];
+            humanVoice = spanishVoices[0];
+        } else {
+            console.error("No se encontró ninguna voz en español en el sistema.");
+        }
+    }
+    loadVoices();
+
+    function startTimer() {
+        let seconds = 0;
+        timerInterval = setInterval(() => {
+            seconds++;
+            const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+            const secs = String(seconds % 60).padStart(2, '0');
+            callTimerEl.textContent = `${mins}:${secs}`;
+        }, 1000);
+    }
+
+    function stopTimer() { clearInterval(timerInterval); }
+    
+    function createTypingIndicator() {
+        const bubble = document.createElement('div');
+        bubble.id = 'typing-bubble';
+        bubble.className = 'p-3 rounded-lg max-w-xs md:max-w-md bg-gray-700 rounded-bl-none mr-auto typing-indicator';
+        bubble.innerHTML = '<span></span><span></span><span></span>';
+        transcriptContainer.appendChild(bubble);
+        transcriptContainer.scrollTop = transcriptContainer.scrollHeight;
+        return bubble;
+    }
+
+    function createBubble(speaker, text) {
+        const bubble = document.createElement('div');
+        bubble.className = 'p-3 rounded-lg max-w-xs md:max-w-md transcript-bubble';
+        if (speaker === 'Carlos') {
+            bubble.classList.add('bg-blue-600', 'rounded-br-none', 'ml-auto');
+            bubble.innerHTML = `<p>${text}</p>`;
+        } else {
+            bubble.classList.add('bg-gray-700', 'rounded-bl-none', 'mr-auto');
+            bubble.innerHTML = `<p class="font-semibold text-blue-300 mb-1">${speaker}</p><p>${text}</p>`;
+        }
+        transcriptContainer.appendChild(bubble);
+        transcriptContainer.scrollTop = transcriptContainer.scrollHeight;
+        setTimeout(() => bubble.classList.add('visible'), 50);
+    }
+    
+    function highlightFeatures(featureIds) {
+        featureItems.forEach(item => {
+            const itemId = parseInt(item.dataset.featureId);
+            if (featureIds.includes(itemId)) item.classList.add('highlighted');
+        });
+    }
+    
+    function addLogEntry(logText, isProcessing = false) {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        if (isProcessing) entry.id = 'processing-log';
+        const timestamp = new Date().toLocaleTimeString('es-ES', { hour12: false });
+        const coloredText = logText.replace(/\[([^\]]+)\]/g, (match, p1) => {
+            if (p1.includes('->')) {
+                 const parts = p1.split(' -> ');
+                 return `<span class="text-blue-400">[${parts[0]}]</span> -&gt; <span class="text-red-400">[${parts[1]}]</span>`;
+            }
+            return `<span class="text-yellow-400">[${p1}]</span>`;
+        });
+        entry.innerHTML = `<span class="text-gray-500">${timestamp}</span> - ${coloredText}`;
+        techLogContainer.appendChild(entry);
+        techLogContainer.scrollTop = techLogContainer.scrollHeight;
+        setTimeout(() => entry.classList.add('visible'), 50);
+        return entry;
+    }
+
+    function updateKpis(kpiData) {
+        if (!kpiData) return;
+        Object.keys(kpiData).forEach(key => {
+            if (kpiElements[key]) {
+                kpiElements[key].textContent = kpiData[key];
+                kpiElements[key].classList.toggle('text-yellow-400', kpiData[key] === 'Medio');
+                kpiElements[key].classList.toggle('text-green-400', kpiData[key] !== 'Medio');
+            }
+        });
+    }
+
+    // --- CAMBIO: Función de resumen actualizada para mostrar KPIs ---
+    function showSummary(summaryData) {
+        document.getElementById('summary-outcome').textContent = summaryData.outcome;
+        document.getElementById('summary-wait-time').textContent = summaryData.wait;
+        document.getElementById('summary-fcr').textContent = summaryData.fcr;
+        document.getElementById('summary-cost').textContent = summaryData.cost;
+        document.getElementById('summary-csat').textContent = summaryData.csat;
+        summaryContainer.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function renderStep(stepIndex) {
+        const step = demoSteps[stepIndex];
+        if (!step) return;
+
+        transcriptContainer.innerHTML = '';
+        featureItems.forEach(item => item.classList.remove('highlighted'));
+        
+        for (let i = 1; i <= 5; i++) {
+            const taskSpan = document.getElementById(`agent-task-${i}`);
+            if (taskSpan) {
+                taskSpan.textContent = taskSpan.dataset.defaultText;
+            }
+        }
+
+        if (step.agentTasks) {
+            Object.keys(step.agentTasks).forEach(agentId => {
+                const taskSpan = document.getElementById(`agent-task-${agentId}`);
+                if (taskSpan) {
+                    taskSpan.textContent = step.agentTasks[agentId];
+                }
+            });
+        }
+
+        updateKpis(step.kpis);
+
+        const isBotTurn = step.speaker !== 'Carlos';
+        let typingIndicator, processingLog;
+
+        if (isBotTurn) {
+            typingIndicator = createTypingIndicator();
+            processingLog = addLogEntry("[ORCHESTRATOR_AGENT] - PROCESSING... 🧠", true);
+        } else {
+             createBubble(step.speaker, step.text);
+             speak(step.text, step.speaker);
+        }
+
+        setTimeout(() => {
+            if (isBotTurn) {
+                typingIndicator.remove();
+                processingLog.remove();
+                createBubble(step.speaker, step.text);
+                speak(step.text, step.speaker);
+            }
+            
+            highlightFeatures(step.features);
+            let logDelay = 50;
+            step.logs.forEach(log => {
+                setTimeout(() => addLogEntry(log), logDelay);
+                logDelay += 100;
+            });
+
+            if (step.callerName) callerNameEl.textContent = step.callerName;
+            if (step.callStatus) callStatusEl.textContent = step.callStatus;
+
+        }, isBotTurn ? 1200 : 200);
+    }
+
+    function resetDemo() {
+        currentStep = -1;
+        speechSynthesis.cancel();
+        transcriptContainer.innerHTML = '';
+        techLogContainer.innerHTML = '<span class="text-gray-600">Esperando inicio de la demo...</span>';
+        callerNameEl.textContent = 'Soporte Telco';
+        callStatusEl.textContent = 'llamada entrante...';
+        callTimerEl.textContent = '00:00';
+        controlBtn.textContent = '▶ Iniciar Demo';
+        controlBtn.className = 'bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg';
+        featureItems.forEach(item => item.classList.remove('highlighted'));
+        phoneIcon.classList.remove('speaking');
+        summaryContainer.classList.add('opacity-0', 'pointer-events-none');
+        ctaBtn.classList.add('hidden');
+        
+        for (let i = 1; i <= 5; i++) {
+            const taskSpan = document.getElementById(`agent-task-${i}`);
+            if (taskSpan) {
+                taskSpan.textContent = taskSpan.dataset.defaultText;
+            }
+        }
+
+        updateKpis({ wait: '--', fcr: '--', cost: '--', csat: '--' });
+        stopTimer();
+    }
+
+    controlBtn.addEventListener('click', () => {
+        if (currentStep === -1) {
+            techLogContainer.innerHTML = '';
+            currentStep++;
+            controlBtn.textContent = 'Siguiente Paso →';
+            startTimer();
+            renderStep(currentStep);
+        } else if (currentStep < demoSteps.length - 1) {
+            currentStep++;
+            renderStep(currentStep);
+        } else if (currentStep === demoSteps.length - 1) {
+            showSummary(demoSteps[demoSteps.length - 1].summary);
+            controlBtn.textContent = 'Reiniciar Demo';
+            controlBtn.className = 'bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-all duration-300 shadow-lg';
+            ctaBtn.classList.remove('hidden');
+            currentStep++; 
+        } else {
+            resetDemo();
+        }
+    });
+
+    ctaBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('Aquí iría la acción del CTA, como abrir una nueva página de prueba.');
+    });
+
+    resetDemo();
+</script>
+
+</body>
+</html>
