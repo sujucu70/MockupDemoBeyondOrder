@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo: Beyond Booking - Gestión de Citas con IA</title>
+    <title>Demo: Beyond Order - Gestión de Pedidos con IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,14 +41,14 @@
 
     <div class="w-full max-w-screen-2xl mx-auto bg-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl border border-gray-700">
         <div class="text-center mb-4">
-            <h1 class="text-3xl md:text-4xl font-bold text-white">Demo Beyond Booking</h1>
-            <p class="text-lg text-gray-400 mt-2">Gestión de Citas · Proceso Híbrido · Experiencia Fluida</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-white">Demo Beyond Order</h1>
+            <p class="text-lg text-gray-400 mt-2">Gestión de Pedidos · Upselling Inteligente · Integración Logística</p>
         </div>
 
         <div id="kpi-panel" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 bg-gray-900/50 p-4 rounded-xl border border-gray-700">
-            <div class="text-center"><p class="text-sm text-gray-400">Tasa de No-Show</p><p id="kpi-no-show" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
-            <div class="text-center"><p class="text-sm text-gray-400">Ocupación de Agenda</p><p id="kpi-occupancy" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
-            <div class="text-center"><p class="text-sm text-gray-400">Coste por Cita</p><p id="kpi-cost" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Precisión de Pedidos</p><p id="kpi-accuracy" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Tiempo de Ciclo</p><p id="kpi-cycle-time" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
+            <div class="text-center"><p class="text-sm text-gray-400">Coste por Pedido</p><p id="kpi-cost" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
             <div class="text-center"><p class="text-sm text-gray-400">Satisfacción Cliente</p><p id="kpi-csat" class="text-2xl font-bold text-green-400 kpi-value">--</p></div>
         </div>
 
@@ -60,7 +60,7 @@
                         <div id="phone-icon" class="w-20 h-20 bg-blue-500 rounded-full mx-auto flex items-center justify-center phone-icon-container">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.518.759a11.03 11.03 0 004.28 4.28l.759-1.518a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
                         </div>
-                        <p id="callerName" class="text-2xl font-semibold mt-4">Clínica Sonrisa Sena</p>
+                        <p id="callerName" class="text-2xl font-semibold mt-4">Pizzería Bella Napoli</p>
                         <p id="callStatus" class="text-gray-400 mt-1">llamada entrante...</p>
                         <p id="callTimer" class="text-gray-400 mt-4 text-lg">00:00</p>
                     </div>
@@ -130,71 +130,127 @@
 <script>
     const demoSteps = [
         {
-            speaker: "Bot", text: "Gracias por llamar a la Clínica Dental Sonrisa Sena. Hemos identificado tu número, hablo con Lucía, ¿verdad?",
+            speaker: "Bot", text: "¡Hola Marcos, bienvenido a Pizzería Bella Napoli! Veo que la última vez pediste una Barbacoa. ¿Quieres repetir tu pedido o prefieres probar algo nuevo?",
             features: [1, 2],
-            agentTasks: { 1: "Recibe la llamada y la transcribe a texto.", 2: "Identifica a la paciente 'Lucía' a través de su número (Caller ID)." },
-            logs: ["[PBX] -> [VOCAL_AGENT] - INCOMING_CALL", "[IDENTITY_AGENT] -> [CRM_API] - POST /lookup_patient"],
-            kpis: { "no-show": "15%", occupancy: "85%", cost: "Alto", csat: "80%" },
-            callerName: "Lucía", callStatus: "Llamada en curso"
+            agentTasks: { 1: "Recibe la llamada y reconoce al cliente.", 2: "Carga el historial de pedidos de 'Marcos' desde el CRM." },
+            logs: ["[PBX] -> [VOCAL_AGENT] - INCOMING_CALL", "[IDENTITY_AGENT] -> [CRM_API] - POST /lookup_customer"],
+            kpis: { accuracy: "98%", "cycle-time": "5 min", cost: "Alto", csat: "85%" },
+            callerName: "Marcos", callStatus: "Llamada en curso"
         },
         {
-            speaker: "Lucía", text: "Sí, soy yo, quiero pedir cita para la limpieza dental que me hago todos los años.",
+            speaker: "Marcos", text: "Hola, hoy quiero pedir una pizza barbacoa.",
             features: [1, 3],
-            agentTasks: { 1: "Interpreta la intención: 'solicitar cita' y la entidad: 'limpieza dental'.", 3: "Recibe la intención y decide el siguiente paso: preguntar preferencias." },
-            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'request_appointment'"],
-            kpis: { "no-show": "15%", occupancy: "85%", cost: "Alto", csat: "82%" }
+            agentTasks: { 1: "Interpreta la intención 'realizar pedido' y la entidad 'pizza barbacoa'.", 3: "Inicia un nuevo carrito de compra y añade el producto." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'create_order'"],
+            kpis: { accuracy: "98%", "cycle-time": "5 min", cost: "Bajo", csat: "88%" }
         },
         {
-            speaker: "Bot", text: "Entendido, una limpieza dental. ¿Tienes alguna preferencia de día u hora? Por ejemplo, la semana que viene por la mañana.",
+            speaker: "Bot", text: "¡Marchando una Barbacoa! ¿La quieres mediana o familiar?",
+            features: [3, 4],
+            agentTasks: { 3: "Detecta que falta información (tamaño) y pregunta al cliente.", 4: "Consulta el catálogo de productos para ver las opciones disponibles." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /product_options?id=barbacoa", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { accuracy: "99%", "cycle-time": "4 min", cost: "Bajo", csat: "90%" }
+        },
+        {
+            speaker: "Marcos", text: "Familiar, que hay hambre.",
+            features: [1, 3],
+            agentTasks: { 1: "Detecta la selección del tamaño 'familiar'.", 3: "Actualiza el carrito con el tamaño y busca oportunidades de upselling." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - UPDATE_CART 'size=familiar'"],
+            kpis: { accuracy: "99%", "cycle-time": "4 min", cost: "Bajo", csat: "91%" }
+        },
+        {
+            speaker: "Bot", text: "Anotado. Oye, por solo un euro más le podemos poner nuestro borde relleno de queso. Le va genial a la Barbacoa.",
+            features: [3, 4],
+            agentTasks: { 3: "Ejecuta la estrategia de upselling programada para este producto.", 4: "Valida el precio y la disponibilidad del extra 'borde de queso'." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [UPSELLING_ENGINE] - GET /recommendation", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { accuracy: "99%", "cycle-time": "3 min", cost: "Bajo", csat: "92%" }
+        },
+        {
+            speaker: "Marcos", text: "Venga, ponle el borde de queso.",
+            features: [1, 3],
+            agentTasks: { 1: "Confirma la aceptación del upselling.", 3: "Añade el extra al carrito y busca oportunidades de cross-selling." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - UPDATE_CART 'extra=cheese_crust'"],
+            kpis: { accuracy: "99%", "cycle-time": "3 min", cost: "Bajo", csat: "93%" }
+        },
+        {
+            speaker: "Bot", text: "¡Perfecto! Ya tienes tu Barbacoa familiar con borde de queso. ¿Te pongo algo para beber o algún entrante para acompañar?",
             features: [3],
-            agentTasks: { 3: "Gestiona el diálogo para acotar la búsqueda de disponibilidad." },
+            agentTasks: { 3: "Ejecuta la estrategia de cross-selling (bebidas/entrantes)." },
             logs: ["[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
-            kpis: { "no-show": "15%", occupancy: "85%", cost: "Alto", csat: "85%" }
+            kpis: { accuracy: "99%", "cycle-time": "3 min", cost: "Bajo", csat: "94%" }
         },
         {
-            speaker: "Lucía", text: "Pues, mira, me vendría mejor la semana que viene por la tarde, si es posible.",
+            speaker: "Marcos", text: "Sí, una botella de Coca-Cola Zero.",
             features: [1, 3],
-            agentTasks: { 1: "Extrae la nueva preferencia temporal: 'próxima semana, tarde'.", 3: "Prepara la consulta de disponibilidad con los parámetros recibidos." },
-            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - PREFERENCE 'next_week_afternoon'"],
-            kpis: { "no-show": "15%", occupancy: "85%", cost: "Bajo", csat: "88%" }
+            agentTasks: { 1: "Detecta el producto 'Coca-Cola Zero'.", 3: "Añade la bebida al carrito y procede al cierre del pedido." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - UPDATE_CART 'item=cocacola_zero'"],
+            kpis: { accuracy: "100%", "cycle-time": "2 min", cost: "Bajo", csat: "95%" }
         },
         {
-            speaker: "Bot", text: "De acuerdo. (pausa breve) He consultado la agenda de nuestros higienistas. Para la próxima semana por la tarde, te puedo ofrecer dos opciones: el Martes a las cinco y media, o el Jueves a las seis. ¿Te va bien alguna?",
+            speaker: "Bot", text: "Estupendo. Repasamos: una pizza Barbacoa familiar con borde de queso por XX euros y una Coca-Cola Zero por X euros. El total es de veintiún euros. ¿Es todo correcto?",
             features: [3, 4],
-            agentTasks: { 3: "Solicita al Agente de Integración los huecos disponibles.", 4: "Consulta la API del calendario en tiempo real y devuelve los huecos libres." },
-            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /availability", "[INTEGRATION_AGENT] -> [ORCHESTRATOR_AGENT] - RESPONSE {slots}"],
-            kpis: { "no-show": "15%", occupancy: "88%", cost: "Bajo", csat: "90%" }
+            agentTasks: { 3: "Solicita el cálculo final del pedido.", 4: "Suma los precios de los productos en el carrito y devuelve el total." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /calculate_total", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { accuracy: "100%", "cycle-time": "2 min", cost: "Bajo", csat: "95%" }
         },
         {
-            speaker: "Lucía", text: "El Jueves a las seis me viene genial.",
-            features: [1, 3],
-            agentTasks: { 1: "Interpreta la selección final del usuario.", 3: "Prepara la confirmación final de la cita." },
-            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - SLOT_CONFIRMED"],
-            kpis: { "no-show": "15%", occupancy: "90%", cost: "Bajo", csat: "91%" }
-        },
-        {
-            speaker: "Bot", text: "¡Perfecto! Pues te agendo la cita para la limpieza dental el próximo jueves, a las seis de la tarde. Para tu comodidad, recibirás ahora un SMS de confirmación con los detalles y un enlace por si necesitaras reprogramarla. Además, te enviaremos un recordatorio 24 horas antes. ¿Necesitas algo más?",
-            features: [3, 4],
-            agentTasks: { 3: "Instruye al Agente de Integración para que confirme y notifique.", 4: "Escribe la cita en el calendario (API) y dispara el envío de SMS de confirmación." },
-            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - POST /book_appointment", "[INTEGRATION_AGENT] -> [NOTIFICATION_SERVICE] - SEND_SMS"],
-            kpis: { "no-show": "<5%", occupancy: "95%", cost: "Bajo", csat: "94%" }
-        },
-        {
-            speaker: "Lucía", text: "No, eso es todo. ¡Muchas gracias!",
+            speaker: "Marcos", text: "Sí, todo correcto.",
             features: [1],
-            agentTasks: { 1: "Detecta la intención de finalizar la llamada." },
-            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - INTENT 'end_call'"],
-            kpis: { "no-show": "<5%", occupancy: "95%", cost: "Bajo", csat: "95%" }
+            agentTasks: { 1: "Recibe la confirmación del cliente." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[VOCAL_AGENT] -> [ORCHESTRATOR_AGENT] - ORDER_CONFIRMED"],
+            kpis: { accuracy: "100%", "cycle-time": "2 min", cost: "Bajo", csat: "95%" }
         },
         {
-            speaker: "Bot", text: "A ti por llamar, Lucía. ¡Que tengas un buen día!",
-            features: [3],
-            agentTasks: { 3: "Finaliza la conversación de forma amable." },
-            logs: ["[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH", "[PBX] -> CALL_ENDED"],
-            kpis: { "no-show": "<5%", occupancy: "95%", cost: "Bajo", csat: "95%" },
+            speaker: "Bot", text: "Genial. Lo enviamos a tu dirección de siempre en la Calle del Sol, número 14, ¿verdad?",
+            features: [2, 3],
+            agentTasks: { 2: "Recupera la dirección guardada del perfil del cliente.", 3: "Pregunta al cliente para confirmar la dirección de entrega." },
+            logs: ["[IDENTITY_AGENT] -> [CRM_API] - GET /customer_address", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { accuracy: "100%", "cycle-time": "2 min", cost: "Bajo", csat: "95%" }
+        },
+        {
+            speaker: "Marcos", text: "Eso es.",
+            features: [1, 4],
+            agentTasks: { 1: "Recibe la confirmación de la dirección.", 4: "Envía el pedido al sistema de cocina/logística." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION", "[INTEGRATION_AGENT] -> [LOGISTICS_API] - POST /new_order"],
+            kpis: { accuracy: "100%", "cycle-time": "2 min", cost: "Bajo", csat: "95%" }
+        },
+        {
+            speaker: "Bot", text: "De acuerdo. He consultado con la cocina y el repartidor calcula que llegará en unos 30 o 35 minutos. ¿Te parece bien?",
+            features: [3, 4],
+            agentTasks: { 3: "Solicita una estimación de entrega.", 4: "Consulta la API de logística para obtener el tiempo de entrega estimado." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - GET /delivery_time", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { accuracy: "100%", "cycle-time": "<2 min", cost: "Bajo", csat: "96%" }
+        },
+        {
+            speaker: "Marcos", text: "Perfecto.",
+            features: [1],
+            agentTasks: { 1: "Recibe la conformidad del cliente." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION"],
+            kpis: { accuracy: "100%", "cycle-time": "<2 min", cost: "Bajo", csat: "96%" }
+        },
+        {
+            speaker: "Bot", text: "¡Pedido confirmado, Marcos! Por confirmar, el método de pago será con tarjeta como siempre, ¿verdad?",
+            features: [2, 3],
+            agentTasks: { 2: "Recupera el método de pago preferido del cliente.", 3: "Confirma el método de pago antes de finalizar." },
+            logs: ["[IDENTITY_AGENT] -> [CRM_API] - GET /payment_method", "[ORCHESTRATOR_AGENT] -> [TTS_ENGINE] - GENERATE_SPEECH"],
+            kpis: { accuracy: "100%", "cycle-time": "<2 min", cost: "Bajo", csat: "97%" }
+        },
+        {
+            speaker: "Marcos", text: "Sí, como siempre.",
+            features: [1],
+            agentTasks: { 1: "Recibe la confirmación del pago." },
+            logs: ["[STT_ENGINE] -> [VOCAL_AGENT] - TRANSCRIPTION"],
+            kpis: { accuracy: "100%", "cycle-time": "<2 min", cost: "Bajo", csat: "97%" }
+        },
+        {
+            speaker: "Bot", text: "Muy bien, tu pizza ya va de camino al horno. Para tu comodidad, te acabo de enviar un SMS al móvil que tenemos registrado con un enlace para que puedas ver el estado de tu pedido en tiempo real. El repartidor llevará el datáfono. ¡Muchas gracias por tu confianza y que aproveche!",
+            features: [3, 4],
+            agentTasks: { 3: "Instruye el envío de la notificación final.", 4: "Dispara el envío de SMS con el enlace de tracking." },
+            logs: ["[ORCHESTRATOR_AGENT] -> [INTEGRATION_AGENT] - SEND_SMS_NOTIFICATION", "[PBX] -> CALL_ENDED"],
+            kpis: { accuracy: "100%", "cycle-time": "<2 min", cost: "Bajo", csat: "98%" },
             callStatus: "Llamada finalizada",
             summary: { 
-                outcome: "Cita para limpieza dental agendada y confirmada por SMS de forma automática, con un recordatorio programado para reducir la tasa de no-show."
+                outcome: "Pedido completado con éxito por voz, incluyendo upselling y cross-selling, con confirmación omnicanal enviada al cliente para el seguimiento en tiempo real."
             }
         }
     ];
@@ -210,7 +266,7 @@
     const summaryContainer = document.getElementById('summary-container');
     const ctaBtn = document.getElementById('cta-btn');
     
-    const kpiElements = { "no-show": document.getElementById('kpi-no-show'), occupancy: document.getElementById('kpi-occupancy'), cost: document.getElementById('kpi-cost'), csat: document.getElementById('kpi-csat') };
+    const kpiElements = { accuracy: document.getElementById('kpi-accuracy'), "cycle-time": document.getElementById('kpi-cycle-time'), cost: document.getElementById('kpi-cost'), csat: document.getElementById('kpi-csat') };
 
     let botVoice = null;
     let humanVoice = null;
@@ -227,10 +283,10 @@
         }
         
         utterance.lang = 'es-ES';
-        if (speaker === 'Lucía') { // Adaptado al nuevo speaker
-            utterance.pitch = 1.2; utterance.rate = 1.05;
-        } else { // Bot
-            utterance.pitch = 1.0; utterance.rate = 1.0;
+        if (speaker === 'Marcos') { // Adaptado al nuevo speaker
+            utterance.pitch = 0.8; utterance.rate = 0.95;
+        } else {
+            utterance.pitch = 1.1;
             utterance.onstart = () => phoneIcon.classList.add('speaking');
             utterance.onend = () => phoneIcon.classList.remove('speaking');
         }
@@ -289,7 +345,7 @@
     function createBubble(speaker, text) {
         const bubble = document.createElement('div');
         bubble.className = 'p-3 rounded-lg max-w-xs md:max-w-md transcript-bubble';
-        if (speaker === 'Lucía') { // Adaptado al nuevo speaker
+        if (speaker === 'Marcos') { // Adaptado al nuevo speaker
             bubble.classList.add('bg-blue-600', 'rounded-br-none', 'ml-auto');
             bubble.innerHTML = `<p>${text}</p>`;
         } else {
@@ -366,7 +422,7 @@
 
         updateKpis(step.kpis);
 
-        const isBotTurn = step.speaker !== 'Lucía'; // Adaptado al nuevo speaker
+        const isBotTurn = step.speaker !== 'Marcos'; // Adaptado al nuevo speaker
         let typingIndicator, processingLog;
 
         if (isBotTurn) {
@@ -403,7 +459,7 @@
         speechSynthesis.cancel();
         transcriptContainer.innerHTML = '';
         techLogContainer.innerHTML = '<span class="text-gray-600">Esperando inicio de la demo...</span>';
-        callerNameEl.textContent = 'Clínica Sonrisa Sena';
+        callerNameEl.textContent = 'Pizzería Bella Napoli';
         callStatusEl.textContent = 'llamada entrante...';
         callTimerEl.textContent = '00:00';
         controlBtn.textContent = '▶ Iniciar Demo';
@@ -420,7 +476,7 @@
             }
         }
 
-        updateKpis({ "no-show": '--', occupancy: '--', cost: '--', csat: '--' });
+        updateKpis({ accuracy: '--', "cycle-time": '--', cost: '--', csat: '--' });
         stopTimer();
     }
 
@@ -435,13 +491,10 @@
             currentStep++;
             renderStep(currentStep);
         } else if (currentStep === demoSteps.length - 1) {
-            // Último paso del bot, antes de mostrar el resumen
             renderStep(currentStep);
-            // El resumen se muestra al siguiente clic
             controlBtn.textContent = 'Ver Resultados';
             currentStep++;
         } else if (currentStep === demoSteps.length) {
-            // Muestra el resumen
             showSummary(demoSteps[demoSteps.length - 1].summary);
             stopTimer();
             controlBtn.textContent = 'Reiniciar Demo';
